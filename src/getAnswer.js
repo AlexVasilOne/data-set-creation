@@ -1,12 +1,11 @@
 const fs = require("fs"),
  path = require("path"),
  { promisify } = require("util"),
- writeFileAsync = promisify(fs.writeFile), // to prevent callback hell
+ writeFileAsync = promisify(fs.writeFile), 
  appendFileAsync = promisify(fs.appendFile),
  readFileAsync = promisify(fs.readFile),
- folderPath = "../data"; // folder with csv files
-
- //getting array of answers from CSV file
+ folderPath = "../data";
+ 
 async function getQuestions() {
   const filePath = path.join(folderPath, "questions.csv");
   let answers = "";
@@ -20,7 +19,7 @@ async function getQuestions() {
   return resultAnswers;
 }
 
-//create body and headers from config file (for now, hardcoded)
+
 function createRequest(question) {
   const url = "http://aist.lab.epam.com:3000/api/chat";
   const headers = new Headers();
@@ -41,7 +40,6 @@ function createRequest(question) {
   return request;
 }
 
-//fetching api response
 async function getAnswerAPI(request) {
   try {
     const response = await fetch(request);
@@ -50,14 +48,13 @@ async function getAnswerAPI(request) {
     }
     const bodyJson = await response.json();
     console.log("Valid response received");
-    return bodyJson.intakes; //name of the body's field which contains answer can be different
+    return bodyJson.intakes;
   } catch (error) {
     console.log("API request failed");
     console.error(error.message);
   }
 }
 
-// replacing by empty file with headers if file exist or creating new file
 async function createCSV() {
   const filePath = path.join(folderPath, "results.csv");
   const csvHeaders = "question,context,answer,ground truth\r\n";
@@ -71,17 +68,17 @@ async function createCSV() {
 }
 
 function parseOutput (str) {
-    const regex = /\\r\\n|\\n|,|"/g; // deleting all "new line" and commas to make it readable for CSV
+    const regex = /\\r\\n|\\n|,|"/g; 
     return str.replace(regex, ""); 
 }
 
 async function writeAnswerAndQuestionToCSV(request, question) {
   const filePath = path.join(folderPath, "results.csv");
-  const data = await getAnswerAPI(request); //getting json array of intakes
+  const data = await getAnswerAPI(request);
   if (data !== undefined) {
   for (const element of data) {
       var elString = JSON.stringify(element).toString();
-      var dataString = JSON.stringify(data).toString(); // for now, using array of employes as a mock for "Context" field
+      var dataString = JSON.stringify(data).toString();
       try {
         await appendFileAsync(
           filePath,

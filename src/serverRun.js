@@ -1,6 +1,3 @@
-// application to listen to 3000 local port 
-// and write "question" and "answer" to the data/results.csv file
-
 const express = require('express'),
   getAnswer = require("./getAnswer"),
   app = express(),
@@ -12,12 +9,10 @@ getAnswer.createCSV().then((filePath) => {
     app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
     app.get('/', (req, res) => res.send('Hello, I write data to file. Send me requests!'));
     app.post('/write', (req, res) => {
-    // Direct extraction of parameters from the request body.
         var mode = req.body.mode;
         var question = req.body.question.toString();
         var answerRaw = req.body.answer;
         var options = req.body.options;
-    // Data to write .CSV format.
         var answer = JSON.stringify(answerRaw)
         const csvData = `"${getAnswer.parseOutput(question)}","","${getAnswer.parseOutput(answer)}",""\r\n`;
         fs.appendFile(filePath, csvData, options, (writeErr) => {

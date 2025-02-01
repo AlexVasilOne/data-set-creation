@@ -11,6 +11,6 @@ async function processAllQuestions() {
     } 
     console.log("Congrats! All done!");  
 }
-getAnswer.createCSV(); // every new run creats new file with results
+getAnswer.createCSV(); 
 processAllQuestions();
 
